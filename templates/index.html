@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro de Llamadas</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        td input { width: 100%; border: none; background: transparent; }
+        td input:focus { outline: 1px solid #007bff; }
+        button { padding: 10px 20px; margin-top: 15px; cursor: pointer; }
+        h2 { margin-top: 40px; }
+        form input[type="text"] { width: 100%; padding: 5px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Historial de Llamadas (Editable)</h1>
+
+    <form method="POST" action="/actualizar">
+        <table>
+            <tr>
+                <th>Número</th>
+                <th>Nombre</th>
+                <th>Lugar</th>
+                <th>Duración</th>
+                <th>Área</th>
+                <th>Transferida</th>
+                <th>Fecha y Hora</th>
+            </tr>
+            {% for key, llamada in llamadas.items() %}
+            <tr>
+                <td><input name="numero_{{key}}" value="{{ llamada.numero }}"></td>
+                <td><input name="nombre_{{key}}" value="{{ llamada.nombre }}"></td>
+                <td><input name="lugar_{{key}}" value="{{ llamada.lugar }}"></td>
+                <td><input name="duracion_{{key}}" value="{{ llamada.duracion }}"></td>
+                <td><input name="area_{{key}}" value="{{ llamada.area }}"></td>
+                <td><input name="transferida_{{key}}" value="{{ llamada.transferida }}"></td>
+                <td><input name="fecha_hora_{{key}}" value="{{ llamada.fecha_hora }}"></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Guardar Cambios</button>
+    </form>
+
+    <h2>Agregar Nueva Llamada</h2>
+    <form method="POST" action="/agregar">
+        <input type="text" name="numero" placeholder="Número de teléfono" required><br>
+        <input type="text" name="nombre" placeholder="Nombre de quien llamó" required><br>
+        <input type="text" name="lugar" placeholder="Lugar (Ej. Jacona, Zamora)" required><br>
+        <input type="text" name="duracion" placeholder="Duración (Ej. 03:15)" required><br>
+        <input type="text" name="area" placeholder="Área a la que llamó" required><br>
+        <input type="text" name="transferida" placeholder="¿Transferida? (Sí/No)" required><br>
+        <button type="submit">Agregar Llamada</button>
+    </form>
+</body>
+</html>
