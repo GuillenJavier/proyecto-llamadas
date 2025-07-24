@@ -1,56 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Registro de Llamadas</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }
-        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
-        td input { width: 100%; border: none; background: transparent; }
-        td input:focus { outline: 1px solid #007bff; }
-        button { padding: 10px 20px; margin-top: 15px; cursor: pointer; }
-        h2 { margin-top: 40px; }
-        form input[type="text"] { width: 100%; padding: 5px; margin: 5px 0; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestor de Llamadas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Historial de Llamadas (Editable)</h1>
+<body class="bg-light">
+  <div class="container py-5">
+    <h1 class="text-center mb-4">📞 Gestor de Llamadas</h1>
 
+    <!-- Formulario para agregar nueva llamada -->
+    <form method="POST" action="/agregar" class="card p-4 mb-4 shadow-sm">
+      <h4 class="mb-3">Agregar nueva llamada</h4>
+      <div class="row g-3">
+        <div class="col-md-4"><input name="numero" class="form-control" placeholder="Número telefónico" required></div>
+        <div class="col-md-4"><input name="nombre" class="form-control" placeholder="Nombre quien llama" required></div>
+        <div class="col-md-4"><input name="lugar" class="form-control" placeholder="Lugar de origen" required></div>
+        <div class="col-md-3"><input name="duracion" class="form-control" placeholder="Duración" required></div>
+
+        <!-- Select de área -->
+        <div class="col-md-3">
+          <select name="area" class="form-control" required>
+            <option value="">Selecciona área</option>
+            {% for key, area in areas.items() %}
+              <option value="{{ area }}">{{ area }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Select de transferencia -->
+        <div class="col-md-3">
+          <select name="transferida" class="form-control" required>
+            <option value="">Transferida a</option>
+            {% for key, area in areas.items() %}
+              <option value="{{ area }}">{{ area }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-3 d-grid">
+          <button type="submit" class="btn btn-primary">➕ Agregar</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Formulario para agregar nueva área -->
+    <form method="POST" action="/agregar_area" class="card p-3 mb-4 shadow-sm">
+      <h5>➕ Agregar nueva área</h5>
+      <div class="input-group">
+        <input name="nueva_area" class="form-control" placeholder="Nombre del área" required>
+        <button type="submit" class="btn btn-secondary">Agregar Área</button>
+      </div>
+    </form>
+
+    <!-- Tabla de llamadas -->
     <form method="POST" action="/actualizar">
-        <table>
+      <div class="table-responsive shadow-sm">
+        <table class="table table-bordered table-hover align-middle bg-white">
+          <thead class="table-dark text-center">
             <tr>
-                <th>Número</th>
-                <th>Nombre</th>
-                <th>Lugar</th>
-                <th>Duración</th>
-                <th>Área</th>
-                <th>Transferida</th>
-                <th>Fecha y Hora</th>
+              <th>Número</th>
+              <th>Nombre</th>
+              <th>Lugar</th>
+              <th>Duración</th>
+              <th>Área</th>
+              <th>Transferida</th>
+              <th>Fecha y Hora</th>
             </tr>
+          </thead>
+          <tbody>
             {% for key, llamada in llamadas.items() %}
             <tr>
-                <td><input name="numero_{{key}}" value="{{ llamada.numero }}"></td>
-                <td><input name="nombre_{{key}}" value="{{ llamada.nombre }}"></td>
-                <td><input name="lugar_{{key}}" value="{{ llamada.lugar }}"></td>
-                <td><input name="duracion_{{key}}" value="{{ llamada.duracion }}"></td>
-                <td><input name="area_{{key}}" value="{{ llamada.area }}"></td>
-                <td><input name="transferida_{{key}}" value="{{ llamada.transferida }}"></td>
-                <td><input name="fecha_hora_{{key}}" value="{{ llamada.fecha_hora }}"></td>
+              <td><input name="numero_{{ key }}" class="form-control" value="{{ llamada.numero }}"></td>
+              <td><input name="nombre_{{ key }}" class="form-control" value="{{ llamada.nombre }}"></td>
+              <td><input name="lugar_{{ key }}" class="form-control" value="{{ llamada.lugar }}"></td>
+              <td><input name="duracion_{{ key }}" class="form-control" value="{{ llamada.duracion }}"></td>
+              <td>
+                <select name="area_{{ key }}" class="form-control">
+                  {% for k, area in areas.items() %}
+                    <option value="{{ area }}" {% if area == llamada.area %}selected{% endif %}>{{ area }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <select name="transferida_{{ key }}" class="form-control">
+                  {% for k, area in areas.items() %}
+                    <option value="{{ area }}" {% if area == llamada.transferida %}selected{% endif %}>{{ area }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td><input name="fecha_hora_{{ key }}" class="form-control" value="{{ llamada.fecha_hora }}"></td>
             </tr>
             {% endfor %}
+          </tbody>
         </table>
-        <button type="submit">Guardar Cambios</button>
+      </div>
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success">💾 Guardar cambios</button>
+      </div>
     </form>
-
-    <h2>Agregar Nueva Llamada</h2>
-    <form method="POST" action="/agregar">
-        <input type="text" name="numero" placeholder="Número de teléfono" required><br>
-        <input type="text" name="nombre" placeholder="Nombre de quien llamó" required><br>
-        <input type="text" name="lugar" placeholder="Lugar (Ej. Jacona, Zamora)" required><br>
-        <input type="text" name="duracion" placeholder="Duración (Ej. 03:15)" required><br>
-        <input type="text" name="area" placeholder="Área a la que llamó" required><br>
-        <input type="text" name="transferida" placeholder="¿Transferida? (Sí/No)" required><br>
-        <button type="submit">Agregar Llamada</button>
-    </form>
+  </div>
 </body>
 </html>
