@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestor de Llamadas</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+
   <div class="container py-5">
     <h1 class="text-center mb-4">📞 Gestor de Llamadas</h1>
 
@@ -14,92 +15,85 @@
     <form method="POST" action="/agregar" class="card p-4 mb-4 shadow-sm">
       <h4 class="mb-3">Agregar nueva llamada</h4>
       <div class="row g-3">
-        <div class="col-md-4"><input name="numero" class="form-control" placeholder="Número telefónico" required></div>
-        <div class="col-md-4"><input name="nombre" class="form-control" placeholder="Nombre quien llama" required></div>
-        <div class="col-md-4"><input name="lugar" class="form-control" placeholder="Lugar de origen" required></div>
-        <div class="col-md-3"><input name="duracion" class="form-control" placeholder="Duración" required></div>
-
-        <!-- Select de área -->
+        <div class="col-md-4">
+          <input name="numero" class="form-control" placeholder="Número telefónico" required>
+        </div>
+        <div class="col-md-4">
+          <input name="nombre" class="form-control" placeholder="Nombre quien llama" value="Ciudadano" required>
+        </div>
+        <div class="col-md-4">
+          <input name="lugar" class="form-control" placeholder="Lugar de origen" required>
+        </div>
         <div class="col-md-3">
-          <select name="area" class="form-control" required>
-            <option value="">Selecciona área</option>
+          <input name="duracion" class="form-control" placeholder="Duración" required>
+        </div>
+        <div class="col-md-3">
+          <select name="area" class="form-select" required>
+            {% for key, area in areas.items() %}
+              <option value="{{ area }}" {% if area == area_predeterminada %}selected{% endif %}>{{ area }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select name="transferida" class="form-select" required>
             {% for key, area in areas.items() %}
               <option value="{{ area }}">{{ area }}</option>
             {% endfor %}
           </select>
         </div>
-
-        <!-- Select de transferencia -->
-        <div class="col-md-3">
-          <select name="transferida" class="form-control" required>
-            <option value="">Transferida a</option>
-            {% for key, area in areas.items() %}
-              <option value="{{ area }}">{{ area }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
         <div class="col-md-3 d-grid">
           <button type="submit" class="btn btn-primary">➕ Agregar</button>
         </div>
       </div>
     </form>
 
-    <!-- Formulario para agregar nueva área -->
-    <form method="POST" action="/agregar_area" class="card p-3 mb-4 shadow-sm">
-      <h5>➕ Agregar nueva área</h5>
-      <div class="input-group">
-        <input name="nueva_area" class="form-control" placeholder="Nombre del área" required>
-        <button type="submit" class="btn btn-secondary">Agregar Área</button>
+    <!-- Formulario para agregar nuevas áreas -->
+    <form method="POST" action="/agregar_area" class="mb-4">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-9">
+          <input type="text" name="nueva_area" class="form-control" placeholder="Nueva área" required>
+        </div>
+        <div class="col-md-3 d-grid">
+          <button type="submit" class="btn btn-secondary">🏷️ Agregar área</button>
+        </div>
       </div>
     </form>
 
-    <!-- Tabla de llamadas -->
-    <form method="POST" action="/actualizar">
-      <div class="table-responsive shadow-sm">
-        <table class="table table-bordered table-hover align-middle bg-white">
-          <thead class="table-dark text-center">
-            <tr>
-              <th>Número</th>
-              <th>Nombre</th>
-              <th>Lugar</th>
-              <th>Duración</th>
-              <th>Área</th>
-              <th>Transferida</th>
-              <th>Fecha y Hora</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for key, llamada in llamadas.items() %}
-            <tr>
-              <td><input name="numero_{{ key }}" class="form-control" value="{{ llamada.numero }}"></td>
-              <td><input name="nombre_{{ key }}" class="form-control" value="{{ llamada.nombre }}"></td>
-              <td><input name="lugar_{{ key }}" class="form-control" value="{{ llamada.lugar }}"></td>
-              <td><input name="duracion_{{ key }}" class="form-control" value="{{ llamada.duracion }}"></td>
-              <td>
-                <select name="area_{{ key }}" class="form-control">
-                  {% for k, area in areas.items() %}
-                    <option value="{{ area }}" {% if area == llamada.area %}selected{% endif %}>{{ area }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-              <td>
-                <select name="transferida_{{ key }}" class="form-control">
-                  {% for k, area in areas.items() %}
-                    <option value="{{ area }}" {% if area == llamada.transferida %}selected{% endif %}>{{ area }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-              <td><input name="fecha_hora_{{ key }}" class="form-control" value="{{ llamada.fecha_hora }}"></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="text-end mt-3">
-        <button type="submit" class="btn btn-success">💾 Guardar cambios</button>
-      </div>
-    </form>
+    <!-- Tabla para editar llamadas existentes -->
+<form method="POST" action="/actualizar">
+  <div class="table-responsive shadow-sm">
+    <table class="table table-bordered table-hover align-middle bg-white">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>Número</th>
+          <th>Nombre</th>
+          <th>Lugar</th>
+          <th>Duración</th>
+          <th>Área</th>
+          <th>Transferida</th>
+          <th>Fecha y Hora</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for key, llamada in llamadas.items() %}
+        <tr>
+          <td><input name="numero_{{ key }}" class="form-control" value="{{ llamada.numero }}" readonly></td>
+          <td><input name="nombre_{{ key }}" class="form-control" value="{{ llamada.nombre }}"></td>
+          <td><input name="lugar_{{ key }}" class="form-control" value="{{ llamada.lugar }}" readonly></td>
+          <td><input name="duracion_{{ key }}" class="form-control" value="{{ llamada.duracion }}" readonly></td>
+          <td><input name="area_{{ key }}" class="form-control" value="{{ llamada.area }}" readonly></td>
+          <td><input name="transferida_{{ key }}" class="form-control" value="{{ llamada.transferida }}" readonly></td>
+          <td><input name="fecha_hora_{{ key }}" class="form-control" value="{{ llamada.fecha_hora }}" readonly></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+  <div class="text-end mt-3">
+    <button type="submit" class="btn btn-success">💾 Guardar cambios</button>
+  </div>
+</form>
+
+
 </body>
 </html>
